@@ -1,0 +1,46 @@
+window.DEFAULT_SITE_DATA = {
+  "site": {
+    "title": "光之战姬 · Character Archive",
+    "heroKicker": "蕾蕾与冰刃零的角色档案。",
+    "heroDescription": "收录设定、三视图、插画与世界观记录。",
+    "xHandle": "@hushubudu023",
+    "xUrl": "https://x.com/hushubudu023"
+  },
+  "characters": {
+    "leilei": {
+      "lead": "温柔、敏感，却比任何人都更愿意伸手救人。",
+      "body": "原组织医疗系战姬。拥有优秀的治疗、能量补充与净化能力，在高压制度下选择离开组织。即使被追捕，她仍会优先救助受伤的同伴。"
+    },
+    "zero": {
+      "lead": "像寒冰一样冷静，曾经把“正确”看得比感情更重要。",
+      "body": "组织中的战斗型战姬，以寒冰能力和高强度正面作战见长。最初奉命追捕蕾蕾，在一次次冲突与救援中开始重新审视组织，最终从执行者变成保护她的人。"
+    }
+  },
+  "world": {
+    "intro": "光之战姬以「晶核」维系力量，并通过能量灯呈现自身状态。能量既是战斗与变身的燃料，也能够在战姬之间传递，用于治疗、修复与支援。"
+  },
+  "gallery": {
+    "leileiHeroCaption": "MAIN VISUAL",
+    "zeroHeroCaption": "PORTRAIT",
+    "zeroSceneCaption": "ICE SCENE",
+    "leileiDayCaption": "DAILY LOOK",
+    "leileiNightCaption": "NIGHT PORTRAIT"
+  },
+  "updates": [
+    {
+      "date": "2026.09.14",
+      "title": "Website V3",
+      "body": "恢复更新日志，并加入管理员后台与 Cloudflare D1 后端骨架。"
+    },
+    {
+      "date": "2026.09.14",
+      "title": "Website V2",
+      "body": "加入冰刃零角色档案、三视图、插画与全年龄世界观。"
+    },
+    {
+      "date": "2026.09.14",
+      "title": "Website V1",
+      "body": "蕾蕾角色官网第一版建立。"
+    }
+  ]
+};

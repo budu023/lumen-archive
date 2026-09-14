@@ -1,0 +1,113 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="theme-color" content="#161117">
+  <title>LUMEN ARCHIVE · Admin</title>
+  <link rel="stylesheet" href="admin.css">
+</head>
+<body>
+  <div class="bg-orb a"></div><div class="bg-orb b"></div>
+
+  <section class="login-screen" id="loginScreen">
+    <div class="login-card">
+      <div class="admin-mark"><span></span></div>
+      <p class="overline">LUMEN ARCHIVE</p>
+      <h1>Admin Console</h1>
+      <p class="sub">管理员后台 · 网站内容管理</p>
+      <div class="local-notice" id="localNotice" hidden>
+        当前是本地预览。真正的账号密码登录与在线保存，需要部署 Cloudflare Functions + D1。
+      </div>
+      <form id="loginForm">
+        <label>USERNAME<input id="username" autocomplete="username" placeholder="管理员账号" required></label>
+        <label>PASSWORD<input id="password" type="password" autocomplete="current-password" placeholder="••••••••" required></label>
+        <button class="primary" type="submit">登录后台 <span>→</span></button>
+      </form>
+      <button class="demo-btn" id="demoBtn" hidden>进入本地界面预览</button>
+      <a class="back-link" href="../index.html">← 返回官网</a>
+      <p class="login-msg" id="loginMsg"></p>
+    </div>
+  </section>
+
+  <div class="app" id="app" hidden>
+    <aside class="sidebar">
+      <a class="side-brand" href="../index.html"><span class="logo-dot"></span><div><strong>LUMEN</strong><small>ADMIN CONSOLE</small></div></a>
+      <nav>
+        <button class="nav-item active" data-panel="overview"><span>◫</span>概览</button>
+        <button class="nav-item" data-panel="home"><span>⌂</span>首页</button>
+        <button class="nav-item" data-panel="characters"><span>◉</span>角色</button>
+        <button class="nav-item" data-panel="world"><span>◇</span>世界观</button>
+        <button class="nav-item" data-panel="gallery"><span>▦</span>图库信息</button>
+        <button class="nav-item" data-panel="updates"><span>↻</span>更新日志</button>
+        <button class="nav-item" data-panel="social"><span>↗</span>社交链接</button>
+        <button class="nav-item" data-panel="backup"><span>⇩</span>备份</button>
+      </nav>
+      <div class="side-bottom">
+        <span id="modeBadge">ONLINE</span>
+        <button id="logoutBtn">退出登录</button>
+      </div>
+    </aside>
+
+    <main class="workspace">
+      <header class="admin-topbar">
+        <div><p id="panelKicker">DASHBOARD</p><h2 id="panelTitle">概览</h2></div>
+        <div class="top-actions"><span class="save-state" id="saveState">未修改</span><button class="save-btn" id="saveBtn">保存更改</button></div>
+      </header>
+
+      <section class="panel active" data-panel-view="overview">
+        <div class="stats">
+          <article><small>CHARACTERS</small><strong>02</strong><span>蕾蕾 / 冰刃零</span></article>
+          <article><small>GALLERY</small><strong>05</strong><span>当前公开插画</span></article>
+          <article><small>UPDATES</small><strong id="updateCount">03</strong><span>更新日志条目</span></article>
+        </div>
+        <div class="overview-grid">
+          <article class="welcome-card"><p class="overline">WELCOME BACK</p><h3>网站内容都可以从这里集中维护。</h3><p>V3 已接好文字内容与更新日志的数据接口。图片上传区域暂时保留，接入 R2 后再开放直接上传。</p><a href="../index.html" target="_blank">打开官网预览 ↗</a></article>
+          <article class="status-card"><h3>后台状态</h3><div><span>内容数据库</span><b id="dbStatus">等待检测</b></div><div><span>图片上传</span><b class="warn">V4 / R2</b></div><div><span>密码</span><b>服务端验证</b></div></article>
+        </div>
+      </section>
+
+      <section class="panel" data-panel-view="home">
+        <div class="form-card">
+          <div class="card-head"><div><p>HOME PAGE</p><h3>首页文字</h3></div></div>
+          <label>网站标题<input data-field="site.title"></label>
+          <label>首页第一行<input data-field="site.heroKicker"></label>
+          <label>首页说明<textarea data-field="site.heroDescription" rows="4"></textarea></label>
+        </div>
+      </section>
+
+      <section class="panel" data-panel-view="characters">
+        <div class="two-col">
+          <div class="form-card pink-edge"><div class="card-head"><div><p>CHARACTER 01</p><h3>蕾蕾</h3></div><span>MEDICAL</span></div><label>一句话介绍<textarea data-field="characters.leilei.lead" rows="3"></textarea></label><label>角色简介<textarea data-field="characters.leilei.body" rows="8"></textarea></label></div>
+          <div class="form-card blue-edge"><div class="card-head"><div><p>CHARACTER 02</p><h3>冰刃零</h3></div><span>COMBAT</span></div><label>一句话介绍<textarea data-field="characters.zero.lead" rows="3"></textarea></label><label>角色简介<textarea data-field="characters.zero.body" rows="8"></textarea></label></div>
+        </div>
+      </section>
+
+      <section class="panel" data-panel-view="world">
+        <div class="form-card"><div class="card-head"><div><p>WORLD / LORE</p><h3>世界观总述</h3></div></div><label>官网展示文字<textarea data-field="world.intro" rows="10"></textarea></label><p class="help">这里保持全年龄版本。其他世界观卡片目前仍写在页面模板里，后续也可以继续数据化。</p></div>
+      </section>
+
+      <section class="panel" data-panel-view="gallery">
+        <div class="form-card"><div class="card-head"><div><p>GALLERY META</p><h3>图库标题</h3></div></div><div class="two-col fields"><label>蕾蕾主视觉<input data-field="gallery.leileiHeroCaption"></label><label>零主视觉<input data-field="gallery.zeroHeroCaption"></label><label>零场景图<input data-field="gallery.zeroSceneCaption"></label><label>蕾蕾日常图<input data-field="gallery.leileiDayCaption"></label><label>蕾蕾夜景图<input data-field="gallery.leileiNightCaption"></label></div></div>
+        <div class="upload-disabled"><div>＋</div><h3>图片上传将在接入 R2 后开放</h3><p>V3 先负责文字、链接和更新日志；这样不会为了上传图片就引入不必要的复杂度。</p></div>
+      </section>
+
+      <section class="panel" data-panel-view="updates">
+        <div class="panel-row"><div><p class="overline">CHANGELOG</p><h3 class="big-panel-title">更新日志</h3></div><button class="secondary" id="addUpdateBtn">＋ 新增更新</button></div>
+        <div class="updates-editor" id="updatesEditor"></div>
+      </section>
+
+      <section class="panel" data-panel-view="social">
+        <div class="form-card"><div class="card-head"><div><p>SOCIAL</p><h3>X / Twitter</h3></div></div><label>显示账号<input data-field="site.xHandle" placeholder="@hushubudu023"></label><label>链接地址<input data-field="site.xUrl" placeholder="https://x.com/..."></label></div>
+      </section>
+
+      <section class="panel" data-panel-view="backup">
+        <div class="form-card"><div class="card-head"><div><p>DATA BACKUP</p><h3>导入 / 导出</h3></div></div><p class="help">你可以随时导出当前网站文字数据为 JSON。部署前也可以在本地后台预览模式里修改后导出。</p><div class="backup-actions"><button class="secondary" id="exportBtn">导出 JSON</button><label class="file-btn">导入 JSON<input type="file" id="importInput" accept="application/json" hidden></label></div></div>
+      </section>
+    </main>
+  </div>
+
+  <script src="../site-data.js"></script>
+  <script src="admin.js"></script>
+</body>
+</html>

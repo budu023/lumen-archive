@@ -1,0 +1,9 @@
+# 示例配置。把 database_id 换成你创建的 D1 数据库 ID。
+name = "lumen-archive"
+compatibility_date = "2026-09-14"
+pages_build_output_dir = "."
+
+[[d1_databases]]
+binding = "DB"
+database_name = "lumen-archive-db"
+database_id = "YOUR_D1_DATABASE_ID"
