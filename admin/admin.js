@@ -21,7 +21,16 @@ const dbStatus = $('#dbStatus');
 
 function setDirty(value=true){ dirty=value; saveState.textContent=value?'有未保存修改':'已保存'; saveState.className='save-state '+(value?'dirty':'saved'); }
 function enterApp(mode='online'){
-  loginScreen.hidden=true; app.hidden=false;
+  // V3.1: robustly switch from login screen to admin app.
+  loginScreen.hidden = true;
+  loginScreen.setAttribute('hidden', '');
+  loginScreen.style.display = 'none';
+
+  app.hidden = false;
+  app.removeAttribute('hidden');
+  app.style.removeProperty('display');
+
+  loginMsg.textContent = '';
   modeBadge.textContent = mode==='local' ? 'LOCAL DEMO' : 'ONLINE';
   modeBadge.style.color = mode==='local' ? '#f0c66a' : '#72d6aa';
   dbStatus.textContent = mode==='local' ? '本地演示' : 'D1 已连接';
@@ -33,7 +42,13 @@ async function checkSession(){
   if(localMode){ localNotice.hidden=false; demoBtn.hidden=false; return; }
   try{
     const res = await fetch('/api/session',{credentials:'same-origin'});
-    if(res.ok){ const j=await res.json(); if(j.authenticated){ await loadRemote(); enterApp('online'); } }
+    if(res.ok){
+      const j=await res.json();
+      if(j.authenticated){
+        await loadRemote();
+        enterApp('online');
+      }
+    }
   }catch(e){}
 }
 
@@ -45,8 +60,13 @@ $('#loginForm').addEventListener('submit', async e => {
     const res=await fetch('/api/login',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({username:$('#username').value,password:$('#password').value})});
     const j=await res.json().catch(()=>({}));
     if(!res.ok) throw new Error(j.error||'登录失败');
-    await loadRemote(); enterApp('online'); loginMsg.textContent='';
-  }catch(err){ loginMsg.textContent=err.message; }
+    loginMsg.textContent='登录成功，正在载入后台…';
+    await loadRemote();
+    enterApp('online');
+  }catch(err){
+    console.error('Admin login error:', err);
+    loginMsg.textContent = err?.message || '后台载入失败，请打开开发者工具 Console 查看错误。';
+  }
 });
 demoBtn.addEventListener('click',()=>enterApp('local'));
 
