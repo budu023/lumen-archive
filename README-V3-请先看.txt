@@ -61,3 +61,4 @@ functions/api/login.js   登录 API
 functions/api/content.js 内容读取 / 保存 API
 schema.sql               D1 表结构
 scripts/hash-password.mjs 密码哈希工具
+favicon deploy
