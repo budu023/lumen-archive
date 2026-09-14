@@ -31,9 +31,12 @@ function openLightbox(src, alt='') {
 function closeLightbox() {
   if (!dialog) return; dialog.close(); document.body.classList.remove('locked'); if (dialogImg) dialogImg.src='';
 }
-document.querySelectorAll('.lightbox-trigger').forEach(btn => btn.addEventListener('click', () => {
-  const img = btn.querySelector('img'); openLightbox(btn.dataset.full, img?.alt || '');
-}));
+document.addEventListener('click', event => {
+  const btn = event.target.closest?.('.lightbox-trigger');
+  if (!btn) return;
+  const img = btn.querySelector('img');
+  openLightbox(btn.dataset.full || img?.src || '', img?.alt || '');
+});
 closeBtn?.addEventListener('click', closeLightbox);
 dialog?.addEventListener('click', e => {
   const rect = dialog.getBoundingClientRect();
@@ -76,11 +79,32 @@ function applySiteData(data){
         <div><strong>${escapeHtml(item.title || '')}</strong><p>${escapeHtml(item.body || '')}</p></div>
       </article>`).join('');
   }
+  renderUploadedGallery(data.galleryUploads || []);
   if (data.site?.title) document.title = data.site.title;
+}
+
+function renderUploadedGallery(items){
+  const grid = document.querySelector('.gallery-grid');
+  if (!grid) return;
+  grid.querySelectorAll('[data-uploaded-gallery]').forEach(el => el.remove());
+  if (!Array.isArray(items)) return;
+  items.forEach(item => {
+    if (!item?.url) return;
+    const character = ['LEILEI','ZERO','OTHER'].includes(item.character) ? item.character : 'OTHER';
+    const glow = character === 'LEILEI' ? 'pink-glow' : character === 'ZERO' ? 'blue-glow' : '';
+    const button = document.createElement('button');
+    button.className = `gallery-item uploaded-gallery ${glow} lightbox-trigger reveal in`;
+    button.dataset.uploadedGallery = '1';
+    button.dataset.full = item.url;
+    button.innerHTML = `<img src="${escapeAttr(item.url)}" alt="${escapeAttr(item.title || 'Gallery artwork')}" loading="lazy">
+      <span><b>${escapeHtml(character)}</b><small>${escapeHtml(item.caption || item.title || 'ARTWORK')}</small></span>`;
+    grid.appendChild(button);
+  });
 }
 function escapeHtml(value=''){
   return String(value).replace(/[&<>'"]/g, ch => ({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'}[ch]));
 }
+function escapeAttr(value=''){ return escapeHtml(value).replace(/`/g,'&#96;'); }
 
 async function loadRemoteContent(){
   const defaults = window.DEFAULT_SITE_DATA || {};

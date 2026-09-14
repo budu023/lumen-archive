@@ -5,12 +5,10 @@
   <meta name="viewport" content="width=device-width,initial-scale=1">
   <meta name="theme-color" content="#161117">
   <title>LUMEN ARCHIVE · Admin</title>
+  <link rel="icon" href="../favicon.ico?v=4" sizes="any">
+  <link rel="icon" type="image/png" sizes="32x32" href="../favicon-32x32.png?v=4">
+  <link rel="apple-touch-icon" href="../apple-touch-icon.png?v=4">
   <link rel="stylesheet" href="admin.css">
-  <link rel="icon" href="/favicon.ico" sizes="any">
-  <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
-  <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
-  <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
-  <link rel="manifest" href="/site.webmanifest">
 </head>
 <body>
   <div class="bg-orb a"></div><div class="bg-orb b"></div>
@@ -63,12 +61,12 @@
       <section class="panel active" data-panel-view="overview">
         <div class="stats">
           <article><small>CHARACTERS</small><strong>02</strong><span>蕾蕾 / 冰刃零</span></article>
-          <article><small>GALLERY</small><strong>05</strong><span>当前公开插画</span></article>
+          <article><small>GALLERY</small><strong id="galleryCount">05</strong><span>当前公开插画</span></article>
           <article><small>UPDATES</small><strong id="updateCount">03</strong><span>更新日志条目</span></article>
         </div>
         <div class="overview-grid">
-          <article class="welcome-card"><p class="overline">WELCOME BACK</p><h3>网站内容都可以从这里集中维护。</h3><p>V3 已接好文字内容与更新日志的数据接口。图片上传区域暂时保留，接入 R2 后再开放直接上传。</p><a href="../index.html" target="_blank">打开官网预览 ↗</a></article>
-          <article class="status-card"><h3>后台状态</h3><div><span>内容数据库</span><b id="dbStatus">等待检测</b></div><div><span>图片上传</span><b class="warn">V4 / R2</b></div><div><span>密码</span><b>服务端验证</b></div></article>
+          <article class="welcome-card"><p class="overline">WELCOME BACK</p><h3>网站内容都可以从这里集中维护。</h3><p>V4 已接入 R2 图片上传。选择图片并发布后，作品会立即进入公开 Gallery，不需要再手动上传到 GitHub。</p><a href="../index.html" target="_blank">打开官网预览 ↗</a></article>
+          <article class="status-card"><h3>后台状态</h3><div><span>内容数据库</span><b id="dbStatus">等待检测</b></div><div><span>图片上传</span><b class="warn" id="r2Status">等待检测</b></div><div><span>密码</span><b>服务端验证</b></div></article>
         </div>
       </section>
 
@@ -93,8 +91,30 @@
       </section>
 
       <section class="panel" data-panel-view="gallery">
-        <div class="form-card"><div class="card-head"><div><p>GALLERY META</p><h3>图库标题</h3></div></div><div class="two-col fields"><label>蕾蕾主视觉<input data-field="gallery.leileiHeroCaption"></label><label>零主视觉<input data-field="gallery.zeroHeroCaption"></label><label>零场景图<input data-field="gallery.zeroSceneCaption"></label><label>蕾蕾日常图<input data-field="gallery.leileiDayCaption"></label><label>蕾蕾夜景图<input data-field="gallery.leileiNightCaption"></label></div></div>
-        <div class="upload-disabled"><div>＋</div><h3>图片上传将在接入 R2 后开放</h3><p>V3 先负责文字、链接和更新日志；这样不会为了上传图片就引入不必要的复杂度。</p></div>
+        <div class="form-card"><div class="card-head"><div><p>GALLERY META</p><h3>固定图库标题</h3></div></div><div class="two-col fields"><label>蕾蕾主视觉<input data-field="gallery.leileiHeroCaption"></label><label>零主视觉<input data-field="gallery.zeroHeroCaption"></label><label>零场景图<input data-field="gallery.zeroSceneCaption"></label><label>蕾蕾日常图<input data-field="gallery.leileiDayCaption"></label><label>蕾蕾夜景图<input data-field="gallery.leileiNightCaption"></label></div></div>
+
+        <div class="upload-card">
+          <div class="card-head"><div><p>R2 LIVE UPLOAD</p><h3>实时上传图片</h3></div><span id="uploadBindingBadge">R2</span></div>
+          <div class="upload-layout">
+            <label class="upload-drop" id="uploadDrop">
+              <input type="file" id="mediaFile" accept="image/jpeg,image/png,image/webp,image/gif,image/avif" hidden>
+              <img id="uploadPreview" alt="" hidden>
+              <div class="upload-placeholder" id="uploadPlaceholder"><strong>＋</strong><span>点击或拖入图片</span><small>JPG / PNG / WEBP / GIF / AVIF · 最大 15 MB</small></div>
+            </label>
+            <div class="upload-fields">
+              <label>标题<input id="mediaTitle" placeholder="例如：蕾蕾 · 夏日插画"></label>
+              <div class="two-col fields">
+                <label>角色<select id="mediaCharacter"><option value="LEILEI">蕾蕾 / LEILEI</option><option value="ZERO">冰刃零 / ZERO</option><option value="OTHER">其他 / OTHER</option></select></label>
+                <label>标签<input id="mediaCaption" placeholder="例如：NEW ARTWORK"></label>
+              </div>
+              <button class="upload-publish" id="uploadMediaBtn" type="button">上传并立即发布 <span>↗</span></button>
+              <p class="upload-status" id="uploadStatus">图片会保存到 Cloudflare R2，并立刻出现在公开 Gallery。</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="panel-row media-row-head"><div><p class="overline">R2 MEDIA</p><h3 class="big-panel-title">已上传图片</h3></div><span class="media-hint">改标题/排序后记得点右上角“保存更改”</span></div>
+        <div class="media-editor" id="mediaEditor"></div>
       </section>
 
       <section class="panel" data-panel-view="updates">

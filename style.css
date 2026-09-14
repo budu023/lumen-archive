@@ -323,3 +323,13 @@ footer>a{text-align:right;font-weight:800;letter-spacing:.13em}
   .update-item{grid-template-columns:88px 1fr;gap:16px}
   .footer-actions{justify-content:center}
 }
+
+/* V4 dynamic R2 gallery */
+.gallery-item.uploaded-gallery{grid-column:span 4;grid-row:span 3}
+.gallery-item.uploaded-gallery img{background:#f5eef2}
+@media(max-width:760px){
+  .gallery-item.uploaded-gallery{grid-column:span 1;grid-row:span 1}
+}
+@media(max-width:480px){
+  .gallery-item.uploaded-gallery{grid-column:1;grid-row:span 1}
+}

@@ -42,5 +42,6 @@ window.DEFAULT_SITE_DATA = {
       "title": "Website V1",
       "body": "蕾蕾角色官网第一版建立。"
     }
-  ]
+  ],
+  "galleryUploads": []
 };
