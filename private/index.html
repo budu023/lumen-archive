@@ -1,0 +1,60 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>LUMEN ARCHIVE · Private</title>
+<style>
+:root{--ink:#241d27;--muted:#887d8a;--line:#eadfe9;--accent:#725575;--bg:#fffafd}
+*{box-sizing:border-box}body{margin:0;background:radial-gradient(circle at 15% 10%,#f7edf7,transparent 35%),var(--bg);color:var(--ink);font-family:system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;min-height:100vh}
+main{max-width:900px;margin:auto;padding:8vh 24px 60px}.brand{letter-spacing:.18em;font-size:12px;color:var(--accent);font-weight:700}.title{font-family:Georgia,serif;font-size:clamp(38px,7vw,72px);margin:10px 0}.sub{color:var(--muted);margin-bottom:40px}
+.card{background:#fff;border:1px solid var(--line);border-radius:20px;padding:28px;box-shadow:0 16px 50px #72557512}.login{max-width:430px;margin:12vh auto}.field{display:block;margin:16px 0}.field span{display:block;font-size:12px;letter-spacing:.1em;color:var(--muted);margin-bottom:7px}.field input{width:100%;padding:13px 14px;border:1px solid #d9ced9;border-radius:10px;font-size:16px}
+button{border:0;border-radius:10px;padding:12px 18px;background:var(--accent);color:#fff;cursor:pointer;font-weight:700}.msg{min-height:24px;color:#b24b63;margin-top:14px}
+#app{display:none}.head{display:flex;justify-content:space-between;align-items:end;gap:20px;margin-bottom:22px}.logout{background:#f1eaf1;color:var(--accent)}.upload{display:flex;gap:10px;flex-wrap:wrap;margin:18px 0}.file{border:1px dashed #cdbdcd;padding:12px 16px;border-radius:10px;flex:1}.docs{display:grid;gap:10px;margin-top:22px}.doc{display:flex;align-items:center;justify-content:space-between;gap:16px;border-top:1px solid var(--line);padding:16px 0}.doc-name{font-weight:650;word-break:break-word}.doc-meta{font-size:12px;color:var(--muted);margin-top:4px}.actions{display:flex;gap:8px;flex-shrink:0}.actions a{text-decoration:none;padding:10px 13px;border-radius:9px;background:#f1eaf1;color:var(--accent);font-weight:650}.danger{background:#fff0f2!important;color:#a33d54!important}
+@media(max-width:600px){.head{align-items:start}.doc{align-items:start;flex-direction:column}.actions{width:100%}.actions a,.actions button{flex:1;text-align:center}}
+</style>
+</head>
+<body>
+<main>
+  <div id="login" class="card login">
+    <div class="brand">LUMEN ARCHIVE / PRIVATE</div>
+    <h1 class="title">Private Archive</h1>
+    <p class="sub">请输入账号与密码访问私人文档。</p>
+    <form id="loginForm">
+      <label class="field"><span>USERNAME</span><input id="username" autocomplete="username" required></label>
+      <label class="field"><span>PASSWORD</span><input id="password" type="password" autocomplete="current-password" required></label>
+      <button type="submit">进入档案</button>
+      <div class="msg" id="loginMsg"></div>
+    </form>
+  </div>
+
+  <section id="app">
+    <div class="head">
+      <div><div class="brand">LUMEN ARCHIVE / PRIVATE</div><h1 class="title">私人文档</h1><p class="sub">只有通过账号密码验证的会话才能读取这些文件。</p></div>
+      <button class="logout" id="logout">退出</button>
+    </div>
+    <div class="card">
+      <div class="upload">
+        <input class="file" id="file" type="file" accept=".pdf,.txt,.md,.rtf,.doc,.docx,.xls,.xlsx,.ppt,.pptx,.zip,.7z,.rar">
+        <button id="upload">上传文档</button>
+      </div>
+      <div id="status" class="msg"></div>
+      <div class="docs" id="docs"></div>
+    </div>
+  </section>
+</main>
+<script>
+const $=s=>document.querySelector(s);
+const login=$('#login'),app=$('#app'),msg=$('#loginMsg'),status=$('#status'),docs=$('#docs');
+const size=n=>n<1024*1024?(n/1024).toFixed(1)+' KB':(n/1024/1024).toFixed(2)+' MB';
+async function session(){try{const r=await fetch('/api/session',{credentials:'same-origin'});if(r.ok&&(await r.json()).authenticated){login.style.display='none';app.style.display='block';load()}}catch{}}
+$('#loginForm').onsubmit=async e=>{e.preventDefault();msg.textContent='验证中…';try{const r=await fetch('/api/login',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({username:$('#username').value,password:$('#password').value})});const j=await r.json();if(!r.ok)throw Error(j.error||'登录失败');login.style.display='none';app.style.display='block';load()}catch(e){msg.textContent=e.message}};
+async function load(){const r=await fetch('/api/docs',{credentials:'same-origin'});const j=await r.json();if(!r.ok){status.textContent=j.error||'读取失败';return}docs.innerHTML=j.documents.length?j.documents.map(d=>`<article class="doc"><div><div class="doc-name">${esc(d.name)}</div><div class="doc-meta">${esc(d.content_type)} · ${size(d.size)}</div></div><div class="actions"><a href="/docs/${encodeURIComponent(d.r2_key.replace(/^private-docs\\//,''))}" target="_blank" rel="noopener">打开</a><button class="danger" onclick="del('${d.id}')">删除</button></div></article>`).join(''):'<p class="sub">还没有私人文档。</p>'}
+$('#upload').onclick=async()=>{const f=$('#file').files[0];if(!f){status.textContent='请选择文件';return}status.textContent='上传中…';const fd=new FormData();fd.append('file',f);try{const r=await fetch('/api/docs',{method:'POST',body:fd,credentials:'same-origin'});const j=await r.json();if(!r.ok)throw Error(j.error||'上传失败');$('#file').value='';status.textContent='上传成功';load()}catch(e){status.textContent=e.message}};
+async function del(id){if(!confirm('确定删除这个文档吗？'))return;const r=await fetch('/api/docs?id='+encodeURIComponent(id),{method:'DELETE',credentials:'same-origin'});if(r.ok)load();else{const j=await r.json().catch(()=>({}));status.textContent=j.error||'删除失败'}}
+$('#logout').onclick=async()=>{await fetch('/api/logout',{method:'POST'});location.reload()};
+function esc(v=''){return String(v).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
+session();
+</script>
+</body>
+</html>
